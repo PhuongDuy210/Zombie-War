@@ -11,8 +11,8 @@ public class PlayerMovement : MonoBehaviour
     // animation IDs
     private int animIDSpeed;
     private int animIDGrounded;
-    private int animIDJump;
-    private int animIDFreeFall;
+    //private int animIDJump;
+    //private int animIDFreeFall;
     private int animIDMotionSpeed;
 
     void Start()
@@ -32,8 +32,8 @@ public class PlayerMovement : MonoBehaviour
     {
         animIDSpeed = Animator.StringToHash("Speed");
         animIDGrounded = Animator.StringToHash("Grounded");
-        animIDJump = Animator.StringToHash("Jump");
-        animIDFreeFall = Animator.StringToHash("FreeFall");
+        //animIDJump = Animator.StringToHash("Jump");
+        //animIDFreeFall = Animator.StringToHash("FreeFall");
         animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
     }
 
