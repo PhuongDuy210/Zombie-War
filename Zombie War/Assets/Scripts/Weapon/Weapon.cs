@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Weapon : MonoBehaviour
@@ -25,7 +26,23 @@ public class Weapon : MonoBehaviour
 
             // Rotate the forward vector around the Y axis (horizontal fan)
             Vector3 spreadDir = Quaternion.AngleAxis(angle, transform.up) * transform.forward;
-            controller.SpawnBulletTrail(spreadDir, config.range);
+
+            RaycastHit hit;
+            float finalRange = config.range;
+
+            if (Physics.Raycast(transform.position, spreadDir, out hit, config.range))
+            {
+                // Shorten trail to hit point
+                finalRange = hit.distance;
+
+                // Trigger hit logic on target
+                var target = hit.collider.GetComponent<IHittable>();
+                if (target != null)
+                {
+                    target.Hit(config.damage, spreadDir, config.knockback);
+                }
+            }
+            controller.SpawnBulletTrail(spreadDir, finalRange);
         }
         muzzleFlash.Play();
         GameEventHandler.PlaySFX(config.gunShotSFXID);

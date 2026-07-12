@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: RifleShot
   m_EditorClassIdentifier: Assembly-CSharp::SFXEntry
   id: 2
-  clip: {fileID: 8300000, guid: 1ab74ae1691b92842b1056db2c3cd891, type: 3}
+  clip: {fileID: 8300000, guid: 30114844b380b88418785402b1e582c0, type: 3}
   group: 1

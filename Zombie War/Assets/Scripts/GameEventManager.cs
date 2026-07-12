@@ -18,6 +18,8 @@ public class GameEventHandler : MonoBehaviour
 
     public static event Action OnSwitchButtonDown;
 
+    public static event Action OnGrenadeButtonDown;
+
     public static void StartGame() => OnGameStart?.Invoke();
     public static void PauseGame() => OnGamePause?.Invoke();
     public static void EndGame(GameState state) => OnGameOver?.Invoke(state);    
@@ -26,4 +28,5 @@ public class GameEventHandler : MonoBehaviour
     public static void StartShooting() => OnShootButtonDown?.Invoke();
     public static void StopShooting() => OnShootButtonUp?.Invoke();
     public static void SwitchWeapon() => OnSwitchButtonDown?.Invoke();
+    public static void ThrowGrenade() => OnGrenadeButtonDown?.Invoke();
 }

@@ -9,6 +9,7 @@ public class WeaponConfig : ScriptableObject
     public int bulletCount;     // e.g. shotgun pellets
     public float spreadAngle;   // bullet spray spread for rifle, pellets spread for shotgun
     public float range;
+    public float knockback;
     public SFXID gunShotSFXID;
     public Sprite gunIcon;
     public GameObject muzzleFlashFX;

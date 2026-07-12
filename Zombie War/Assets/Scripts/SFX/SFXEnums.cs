@@ -4,6 +4,11 @@ public enum SFXID
     WeaponSwitch,
     RifleShot,
     ShotgunShot,
+    GrenadeThrow,
+    GrenadeExplode,
+    ZombieGroan,
+    ZombieDamaged,
+    ZombieDead,
     Win,
     Lose
     // Add more as needed

@@ -8,7 +8,6 @@ using UnityEngine.UI;
 
 public class WeaponController : MonoBehaviour
 {
-    [SerializeField]
     private ObjectPool bulletTrailPool;
 
     [SerializeField]
@@ -35,6 +34,8 @@ public class WeaponController : MonoBehaviour
         anim = GetComponent<Animator>();
         animIDShootingSpeed = Animator.StringToHash("ShootingSpeed");
         animIDIsShooting = Animator.StringToHash("IsShooting");
+
+        bulletTrailPool = PoolManager.Instance.Get(PrefabKey.BulletTrail);
 
         ChangeWeapon(currentIndex);
     }

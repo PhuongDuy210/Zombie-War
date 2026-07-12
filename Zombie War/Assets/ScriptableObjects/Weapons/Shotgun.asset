@@ -18,6 +18,7 @@ MonoBehaviour:
   bulletCount: 6
   spreadAngle: 15
   range: 3
+  knockback: 5
   gunShotSFXID: 3
   gunIcon: {fileID: 21300000, guid: b43991432aa49d346b15bf334f38f9d4, type: 3}
   muzzleFlashFX: {fileID: 2176490616440197487, guid: ab85a4eeaed6c1249b2471585a9efc46, type: 3}
