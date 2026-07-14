@@ -24,6 +24,10 @@ public class GameEventHandler : MonoBehaviour
 
     public static event Action OnEnemyKilled;
 
+    public static event Action OnLevelChange;
+
+    public static event Action OnLevelRetry;
+
     public static void StartGame() => OnGameStart?.Invoke();
     public static void PauseGame() => OnGamePause?.Invoke();
     public static void EndGame(GameState state) => OnGameOver?.Invoke(state);    
@@ -35,4 +39,6 @@ public class GameEventHandler : MonoBehaviour
     public static void ThrowGrenade() => OnGrenadeButtonDown?.Invoke();
     public static void UpdatePlayerHealth(float percentage) => OnPlayerHealthUpdate?.Invoke(percentage);
     public static void EnemyKilled() => OnEnemyKilled?.Invoke();
+    public static void NextLevel() => OnLevelChange?.Invoke();
+    public static void RetryLevel() => OnLevelRetry?.Invoke();
 }

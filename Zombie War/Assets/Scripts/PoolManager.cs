@@ -43,4 +43,22 @@ public class PoolManager : MonoBehaviour
 		Debug.LogWarning($"No pool found for {key}");
 		return null;
 	}
+
+    private void OnEnable()
+    {
+		GameEventHandler.OnGameStart += ResetAllPool;
+    }
+
+    private void OnDisable()
+    {
+        GameEventHandler.OnGameStart -= ResetAllPool;
+    }
+
+	private void ResetAllPool()
+	{
+		foreach (var (entry, pool) in lookup)
+		{
+			pool.RecallAllObjects();
+        }
+	}
 }

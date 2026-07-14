@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Android;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -26,13 +27,17 @@ public class GameManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
-    private void Start()
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         GameEventHandler.StartGame();
     }
 
     private void OnEnable()
     {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        GameEventHandler.OnLevelRetry += ReloadLevel;
+        GameEventHandler.OnLevelChange += NextLevel;
         GameEventHandler.OnGameStart += LoadLevel;
         GameEventHandler.OnEnemyKilled += IncreaseKillCount;
         GameEventHandler.OnGameOver += GameOver;
@@ -40,19 +45,34 @@ public class GameManager : MonoBehaviour
 
     private void OnDisable()
     {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+        GameEventHandler.OnLevelRetry -= ReloadLevel;
+        GameEventHandler.OnLevelChange -= NextLevel;
         GameEventHandler.OnGameStart -= LoadLevel;
         GameEventHandler.OnEnemyKilled -= IncreaseKillCount;
         GameEventHandler.OnGameOver -= GameOver;
     }
 
+    private void ReloadLevel()
+    {
+        SceneManager.LoadScene(level - 1);
+    }
+
+    private void NextLevel()
+    {
+        level++;
+        SceneManager.LoadScene(level -1);
+    }
+
     private void LoadLevel()
     {
         levelConfig = Resources.Load<LevelConfig>("Levels/" + level);
+        Debug.Log("Load Config " + level);
         if (spawner == null)
         {
             spawner = FindFirstObjectByType<EnemySpawner>();
         }
-        spawner.StartSpawner();
+        spawner.StartSpawner(levelConfig);
         gameState = GameState.Start;
 
         totalKillRequire = 0;

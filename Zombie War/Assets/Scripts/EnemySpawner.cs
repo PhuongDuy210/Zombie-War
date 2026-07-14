@@ -4,10 +4,12 @@ using System.Collections.Generic;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField] private LevelConfig levelConfig;
+    private LevelConfig levelConfig;
     [SerializeField] private List<Transform> spawnLocations;
 
     private Dictionary<EnemyType, EnemyConfig> enemyConfigs = new Dictionary<EnemyType, EnemyConfig>();
+    private Dictionary<EnemyEntry, int> entrySpawned = new Dictionary<EnemyEntry, int>();
+
     private int currentSpawned = 0;
 
     private void Awake()
@@ -18,16 +20,24 @@ public class EnemySpawner : MonoBehaviour
     private void OnEnable()
     {
         GameEventHandler.OnEnemyKilled += DecreaseSpawnCount;
+        GameEventHandler.OnGameOver += StopSpawner;
     }
 
     private void OnDisable()
     {
         GameEventHandler.OnEnemyKilled -= DecreaseSpawnCount;
+        GameEventHandler.OnGameOver -= StopSpawner;
     }
 
-    public void StartSpawner()
+    public void StartSpawner(LevelConfig levelConfig)
     {
+        this.levelConfig = levelConfig;
         StartCoroutine(SpawnRoutine());
+    }
+
+    public void StopSpawner(GameState gameState)
+    {
+        StopAllCoroutines();
     }
 
     private void LoadEnemyConfigs()
@@ -45,24 +55,27 @@ public class EnemySpawner : MonoBehaviour
 
     private IEnumerator SpawnRoutine()
     {
+        entrySpawned.Clear();
+
         foreach (var entry in levelConfig.enemyEntries)
         {
-            // Wait until the buffer time for this entry
+            entrySpawned[entry] = 0; // start at zero
+
             yield return new WaitForSeconds(entry.timeSpawnBuffer);
 
-            for (int i = 0; i < entry.amount; i++)
+            while (entrySpawned[entry] < entry.amount)
             {
-                if (currentSpawned >= levelConfig.maxSpawn)
+                while (currentSpawned >= levelConfig.maxSpawn)
                 {
-                    yield break;
+                    yield return new WaitForSeconds(0.5f); // keep waiting until DecreaseSpawnCount lowers it
                 }
 
                 if (enemyConfigs.TryGetValue(entry.type, out var config))
                 {
                     SpawnEnemy(config);
+                    entrySpawned[entry]++;   // track per-entry
                 }
 
-                // Small delay between spawns to avoid popping all at once
                 yield return new WaitForSeconds(0.5f);
             }
         }
@@ -82,7 +95,14 @@ public class EnemySpawner : MonoBehaviour
 
         GameObject enemyGO = pool.Pop();
         enemyGO.SetActive(true);
-        enemyGO.transform.position = spawnPoint.position;
+
+        // Add random offset around the spawn point
+        Vector3 offset = new Vector3(
+            Random.Range(-2f, 2f),   // X variation
+            0f,                      // keep Y fixed so they don’t float
+            Random.Range(-2f, 2f)    // Z variation
+        );
+        enemyGO.transform.position = spawnPoint.position + offset;
 
         // Initialize stats if your Enemy script supports it
         Zombie enemy = enemyGO.GetComponent<Zombie>();

@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Audio;
 
 public class ZombieController : MonoBehaviour
 {
@@ -33,13 +32,11 @@ public class ZombieController : MonoBehaviour
     private int animIDDead;
     private int animIDDamaged;
 
-    void Start()
+    private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
         AssignAnimationIDs();
-
-        player = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
     private void OnEnable()
@@ -49,17 +46,27 @@ public class ZombieController : MonoBehaviour
             skinRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
             block = new MaterialPropertyBlock();
         }
-        skinRenderer.GetPropertyBlock(block);
-        block.SetFloat("_DissolveAmount", 0);
-        skinRenderer.SetPropertyBlock(block);
+        ResetMaterial();
+
+        if (player == null)
+        {
+            player = GameObject.FindGameObjectWithTag("Player").transform;
+        }
 
         hitbox.enabled = false;
         StartCoroutine(PlaySFXRoutine());
+
+        GameEventHandler.OnGameOver += GameOver;
     }
 
     private void OnDisable()
     {
-        
+        GameEventHandler.OnGameOver -= GameOver;
+    }
+
+    private void GameOver(GameState gameState)
+    {
+        agent.isStopped = true;
     }
 
     private void AssignAnimationIDs()
@@ -74,7 +81,7 @@ public class ZombieController : MonoBehaviour
     {
         float distanceToPlayer = Vector3.Distance(player.position, transform.position);
 
-        if (!agent.isStopped && GameManager.Instance.gameState == GameState.Start)
+        if (!agent.isStopped)
         {
             if (distanceToPlayer <= chaseRange)
             {
@@ -114,7 +121,6 @@ public class ZombieController : MonoBehaviour
         hitbox.enabled = true;
         anim.SetTrigger(animIDAttack);
         StartCoroutine(TemporaryStopRoutine());
-        // Add animation trigger or damage logic here
     }
 
     private IEnumerator PlaySFXRoutine()
@@ -214,6 +220,11 @@ public class ZombieController : MonoBehaviour
 
         yield return new WaitForSeconds(flashDuration);
 
+        ResetMaterial();
+    }
+
+    private void ResetMaterial()
+    {
         // Reset back to default (clear block)
         skinRenderer.GetPropertyBlock(block);
         block.Clear();

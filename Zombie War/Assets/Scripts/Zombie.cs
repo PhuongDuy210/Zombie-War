@@ -20,18 +20,17 @@ public class Zombie : MonoBehaviour, IHittable
 
     private void OnEnable()
     {
+        if (player == null)
+        {
+            player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        }
+
         if (capCollider == null)
         {
             capCollider = GetComponent<Collider>();
         }
         capCollider.enabled = true;
         isDead = false;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public void Init(EnemyConfig config)

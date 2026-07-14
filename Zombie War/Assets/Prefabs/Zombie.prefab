@@ -1324,7 +1324,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &236165189257415835
 Transform:
   m_ObjectHideFlags: 0
@@ -1398,9 +1398,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 188b98cbbd50efd49884e7b11bc4d38c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZombieController
-  chaseRange: 10
+  chaseRange: 100
   hitbox: {fileID: 7690459017799799590}
-  attackRange: 2
+  attackRange: 1
   attackCooldown: 1.5
 --- !u!114 &2492185428290063269
 MonoBehaviour:

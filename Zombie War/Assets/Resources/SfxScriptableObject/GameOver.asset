@@ -15,4 +15,5 @@ MonoBehaviour:
   id: 11
   clip: {fileID: 8300000, guid: 182fd373fcb9d9e4abcb2df39869f098, type: 3}
   group: 1
-  volumeBalance: 1
+  volumeBalance: 0.7
+  overlapAllowed: 1

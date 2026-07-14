@@ -15,4 +15,4 @@ MonoBehaviour:
   id: 1
   prefabKey: 1
   hp: 100
-  attack: 10
+  attack: 5
