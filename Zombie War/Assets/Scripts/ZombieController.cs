@@ -7,7 +7,7 @@ public class ZombieController : MonoBehaviour
     private Transform player;            // Reference to the player
     private Animator anim;
 
-    private SkinnedMeshRenderer skinRenderer;
+    private SkinnedMeshRenderer[] skinRenderers;
     private MaterialPropertyBlock block;
 
     private float flashDuration = 0.2f;
@@ -41,9 +41,9 @@ public class ZombieController : MonoBehaviour
 
     private void OnEnable()
     {
-        if (skinRenderer == null)
+        if (skinRenderers == null)
         {
-            skinRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
+            skinRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();
             block = new MaterialPropertyBlock();
         }
         ResetMaterial();
@@ -160,6 +160,7 @@ public class ZombieController : MonoBehaviour
         agent.isStopped = true; // stop moving
         yield return new WaitForSeconds(1f); // stunned for 1 second
         agent.isStopped = false; // resume movement
+        hitbox.enabled = false;
     }
 
     private void ApplyKnockback(Vector3 hitDirection, float knockback)
@@ -197,7 +198,9 @@ public class ZombieController : MonoBehaviour
 
     public void Dead()
     {
+        agent.ResetPath();
         agent.isStopped = true;
+        hitbox.enabled = false;
         anim.SetTrigger(animIDDead);
         GameEventHandler.PlaySFX(SFXID.ZombieDead);
         GameEventHandler.EnemyKilled();
@@ -214,9 +217,12 @@ public class ZombieController : MonoBehaviour
     private IEnumerator FlashRoutine()
     {
         // Apply hurt color
-        skinRenderer.GetPropertyBlock(block);
-        block.SetFloat("_FlashIntensity", 0.5f);
-        skinRenderer.SetPropertyBlock(block);
+        foreach (Renderer skinRenderer in skinRenderers)
+        {
+            skinRenderer.GetPropertyBlock(block);
+            block.SetFloat("_FlashIntensity", 0.5f);
+            skinRenderer.SetPropertyBlock(block);
+        }
 
         yield return new WaitForSeconds(flashDuration);
 
@@ -226,21 +232,28 @@ public class ZombieController : MonoBehaviour
     private void ResetMaterial()
     {
         // Reset back to default (clear block)
-        skinRenderer.GetPropertyBlock(block);
-        block.Clear();
-        skinRenderer.SetPropertyBlock(block);
+        foreach (Renderer skinRenderer in skinRenderers)
+        {
+            skinRenderer.GetPropertyBlock(block);
+            block.Clear();
+            skinRenderer.SetPropertyBlock(block);
+        }
     }
 
     private void StartDissolve()
     {
         StopCoroutine(nameof(DissolveCoroutine));
-        StartCoroutine(DissolveCoroutine());
+        foreach (Renderer skinRenderer in skinRenderers)
+        {
+            StartCoroutine(DissolveCoroutine(skinRenderer));
+        }
     }
 
-    private IEnumerator DissolveCoroutine()
+    private IEnumerator DissolveCoroutine(Renderer skinRenderer)
     {
         yield return new WaitForSeconds(2f);
         float dissolveAmount = 0f;
+
         skinRenderer.GetPropertyBlock(block);
         while (dissolveAmount < 1f)
         {

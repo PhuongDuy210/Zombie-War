@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +11,10 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private GenericPopup genericPopup;
 
+    [SerializeField]
+    private TMP_Text killCountText;
+    private int killCount = 0;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -20,13 +24,21 @@ public class UIManager : MonoBehaviour
     private void OnEnable()
     {
         GameEventHandler.OnPlayerHealthUpdate += UpdateHealth;
+        GameEventHandler.OnEnemyKilled += UpdateKillCount;
         GameEventHandler.OnGameOver += GameOver;
     }
 
     private void OnDisable()
     {
         GameEventHandler.OnPlayerHealthUpdate -= UpdateHealth;
+        GameEventHandler.OnEnemyKilled -= UpdateKillCount;
         GameEventHandler.OnGameOver -= GameOver;
+    }
+
+    private void UpdateKillCount()
+    {
+        killCount++;
+        killCountText.text = "Kill Count: " + killCount.ToString();
     }
 
     private void UpdateHealth(float currentHealthPercentage)

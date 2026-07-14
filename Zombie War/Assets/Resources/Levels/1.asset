@@ -18,11 +18,11 @@ MonoBehaviour:
     amount: 50
     timeSpawnBuffer: 0
   - type: 1
-    amount: 20
-    timeSpawnBuffer: 30
-  - type: 1
     amount: 30
     timeSpawnBuffer: 60
+  - type: 1
+    amount: 20
+    timeSpawnBuffer: 100
   - type: 1
     amount: 50
     timeSpawnBuffer: 120

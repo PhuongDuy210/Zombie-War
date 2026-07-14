@@ -26,6 +26,8 @@ public class GameManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        Application.targetFrameRate = 60;
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)

@@ -672,7 +672,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9716cbd1410dc004ea62978057f7e59e, type: 2}
+  - {fileID: 2100000, guid: f59e1a8d81ce29b40b0bd20c66e4e27e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -834,7 +834,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9716cbd1410dc004ea62978057f7e59e, type: 2}
+  - {fileID: 2100000, guid: f59e1a8d81ce29b40b0bd20c66e4e27e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -940,7 +940,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.64111, y: 0.05, z: 15.29859}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7548809727914483618}
@@ -1002,7 +1002,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
+  m_Speed: 0.75
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -1040,8 +1040,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ZombieController
   chaseRange: 100
   hitbox: {fileID: 7701306869229657295}
-  attackRange: 1
-  attackCooldown: 3
+  attackRange: 1.5
+  attackCooldown: 2
 --- !u!54 &217880601747492134
 Rigidbody:
   m_ObjectHideFlags: 0

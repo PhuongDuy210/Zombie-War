@@ -15,8 +15,8 @@ MonoBehaviour:
   weaponName: Shotgun
   damage: 10
   fireRate: 1
-  bulletCount: 6
-  spreadAngle: 15
+  bulletCount: 12
+  spreadAngle: 20
   range: 3
   knockback: 0.9
   gunShotSFXID: 3

@@ -32,7 +32,12 @@ public class EnemySpawner : MonoBehaviour
     public void StartSpawner(LevelConfig levelConfig)
     {
         this.levelConfig = levelConfig;
-        StartCoroutine(SpawnRoutine());
+        entrySpawned.Clear();
+        foreach (var entry in levelConfig.enemyEntries)
+        {
+            entrySpawned[entry] = 0;
+            StartCoroutine(SpawnEntryRoutine(entry));
+        }
     }
 
     public void StopSpawner(GameState gameState)
@@ -53,33 +58,29 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
-    private IEnumerator SpawnRoutine()
+    private IEnumerator SpawnEntryRoutine(EnemyEntry entry)
     {
-        entrySpawned.Clear();
+        // Wait until this entry’s buffer time
+        yield return new WaitForSeconds(entry.timeSpawnBuffer);
 
-        foreach (var entry in levelConfig.enemyEntries)
+        while (entrySpawned[entry] < entry.amount)
         {
-            entrySpawned[entry] = 0; // start at zero
-
-            yield return new WaitForSeconds(entry.timeSpawnBuffer);
-
-            while (entrySpawned[entry] < entry.amount)
+            // Respect global max
+            while (currentSpawned >= levelConfig.maxSpawn)
             {
-                while (currentSpawned >= levelConfig.maxSpawn)
-                {
-                    yield return new WaitForSeconds(0.5f); // keep waiting until DecreaseSpawnCount lowers it
-                }
-
-                if (enemyConfigs.TryGetValue(entry.type, out var config))
-                {
-                    SpawnEnemy(config);
-                    entrySpawned[entry]++;   // track per-entry
-                }
-
                 yield return new WaitForSeconds(0.5f);
             }
+
+            if (enemyConfigs.TryGetValue(entry.type, out var config))
+            {
+                SpawnEnemy(config);
+                entrySpawned[entry]++;
+            }
+
+            yield return new WaitForSeconds(0.5f);
         }
     }
+
 
     private void SpawnEnemy(EnemyConfig config)
     {

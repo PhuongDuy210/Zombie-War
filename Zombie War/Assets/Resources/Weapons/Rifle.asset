@@ -16,7 +16,7 @@ MonoBehaviour:
   damage: 20
   fireRate: 5
   bulletCount: 1
-  spreadAngle: 2
+  spreadAngle: 5
   range: 20
   knockback: 0.2
   gunShotSFXID: 2
