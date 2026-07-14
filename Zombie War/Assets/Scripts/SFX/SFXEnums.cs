@@ -9,6 +9,7 @@ public enum SFXID
     ZombieGroan,
     ZombieDamaged,
     ZombieDead,
+    PlayerHurt,
     Win,
     Lose
     // Add more as needed

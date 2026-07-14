@@ -20,6 +20,10 @@ public class GameEventHandler : MonoBehaviour
 
     public static event Action OnGrenadeButtonDown;
 
+    public static event Action<float> OnPlayerHealthUpdate;
+
+    public static event Action OnEnemyKilled;
+
     public static void StartGame() => OnGameStart?.Invoke();
     public static void PauseGame() => OnGamePause?.Invoke();
     public static void EndGame(GameState state) => OnGameOver?.Invoke(state);    
@@ -29,4 +33,6 @@ public class GameEventHandler : MonoBehaviour
     public static void StopShooting() => OnShootButtonUp?.Invoke();
     public static void SwitchWeapon() => OnSwitchButtonDown?.Invoke();
     public static void ThrowGrenade() => OnGrenadeButtonDown?.Invoke();
+    public static void UpdatePlayerHealth(float percentage) => OnPlayerHealthUpdate?.Invoke(percentage);
+    public static void EnemyKilled() => OnEnemyKilled?.Invoke();
 }

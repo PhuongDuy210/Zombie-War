@@ -15,3 +15,4 @@ MonoBehaviour:
   id: 2
   clip: {fileID: 8300000, guid: 30114844b380b88418785402b1e582c0, type: 3}
   group: 1
+  volumeBalance: 0.5

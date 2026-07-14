@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +12,9 @@ public class SFXManager : MonoBehaviour
     private Dictionary<SFXGroup, List<AudioSource>> groupMap = new Dictionary<SFXGroup, List<AudioSource>>();
     private Dictionary<SFXGroup, float> groupVolumes = new Dictionary<SFXGroup, float>();
 
+    // Track active counts per SFXID
+    private Dictionary<SFXID, int> activeCounts = new Dictionary<SFXID, int>();
+
     private void Awake()
     {
         sfxEntries.AddRange(Resources.LoadAll<SFXEntry>("SfxScriptableObject"));
@@ -21,6 +25,10 @@ public class SFXManager : MonoBehaviour
             audio.clip = entry.clip;
 
             sfxMap[entry.id] = audio;
+            if (entry.overlapAllowed > 0)
+            {
+                activeCounts[entry.id] = 0;
+            }
 
             if (!groupMap.ContainsKey(entry.group))
                 groupMap[entry.group] = new List<AudioSource>();
@@ -49,8 +57,23 @@ public class SFXManager : MonoBehaviour
         var entry = sfxEntries.Find(e => e.id == id);
         if (entry == null) return;
 
+        if (entry.overlapAllowed > 0 && activeCounts[id] >= entry.overlapAllowed) return;
+
         float volume = groupVolumes.TryGetValue(entry.group, out var v) ? v : 1.0f;
+        volume = volume * entry.volumeBalance;
         audio.PlayOneShot(audio.clip, volume);
+
+        if (entry.overlapAllowed > 0)
+        {
+            activeCounts[id]++;
+            StartCoroutine(ResetCountAfterDelay(id, entry.clip.length));
+        }
+    }
+
+    private IEnumerator ResetCountAfterDelay(SFXID id, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        activeCounts[id] = Mathf.Max(0, activeCounts[id] - 1);
     }
 
     public void SetGroupVolume(SFXGroup group, float volume)

@@ -2,25 +2,29 @@ using UnityEngine;
 
 public class Zombie : MonoBehaviour, IHittable
 {
-    public float health = 100;
+    private Player player;
+
+    private float health;
+    private float attack;
     private ZombieController controller;
-    private BoxCollider boxCollider;
+    private Collider capCollider;
     private bool isDead = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         controller = GetComponent<ZombieController>();
-        boxCollider = GetComponent<BoxCollider>();
+        capCollider = GetComponent<Collider>();
     }
 
     private void OnEnable()
     {
-        if (boxCollider == null)
+        if (capCollider == null)
         {
-            boxCollider = GetComponent<BoxCollider>();
+            capCollider = GetComponent<Collider>();
         }
-        boxCollider.enabled = true;
+        capCollider.enabled = true;
         isDead = false;
     }
 
@@ -28,6 +32,12 @@ public class Zombie : MonoBehaviour, IHittable
     void Update()
     {
         
+    }
+
+    public void Init(EnemyConfig config)
+    {
+        health = config.hp;
+        attack = config.attack;
     }
 
     public void Hit(float damage, Vector3 hitDirection, float knockback)
@@ -43,16 +53,17 @@ public class Zombie : MonoBehaviour, IHittable
         {
             Die();
         }
-        else
-        {
-            // Resume after short delay
-            //StartCoroutine(ResumeAfterDelay(0.5f));
-        }
+    }
+
+    public void Attack()
+    {
+        if (isDead) return;
+        player.TakeDamage(attack);
     }
 
     private void Die()
     {
         controller.Dead();
-        boxCollider.enabled = false;
+        capCollider.enabled = false;
     }
 }

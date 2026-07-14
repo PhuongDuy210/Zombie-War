@@ -132,7 +132,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9872a26fa3891de49bd6a91370213f43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Grenade
-  fuseTime: 5
+  fuseTime: 3
   baseDamage: 150
   baseKnockback: 10
   radius: 10

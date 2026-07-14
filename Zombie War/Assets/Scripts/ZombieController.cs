@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Audio;
 
 public class ZombieController : MonoBehaviour
 {
@@ -17,7 +18,9 @@ public class ZombieController : MonoBehaviour
     private float chaseRange = 10f;      // Distance at which enemy starts chasing
 
     [SerializeField]
-    public float attackRange = 2f;      // Distance at which enemy attacks
+    private Collider hitbox;
+    [SerializeField]
+    public float attackRange = 1f;      // Distance at which enemy attacks
     [SerializeField]
     public float attackCooldown = 1.5f; // Time between attacks
 
@@ -36,7 +39,7 @@ public class ZombieController : MonoBehaviour
         anim = GetComponent<Animator>();
         AssignAnimationIDs();
 
-        player = FindFirstObjectByType<PlayerMovement>().gameObject.transform;
+        player = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
     private void OnEnable()
@@ -49,6 +52,9 @@ public class ZombieController : MonoBehaviour
         skinRenderer.GetPropertyBlock(block);
         block.SetFloat("_DissolveAmount", 0);
         skinRenderer.SetPropertyBlock(block);
+
+        hitbox.enabled = false;
+        StartCoroutine(PlaySFXRoutine());
     }
 
     private void OnDisable()
@@ -68,7 +74,7 @@ public class ZombieController : MonoBehaviour
     {
         float distanceToPlayer = Vector3.Distance(player.position, transform.position);
 
-        if (!agent.isStopped)
+        if (!agent.isStopped && GameManager.Instance.gameState == GameState.Start)
         {
             if (distanceToPlayer <= chaseRange)
             {
@@ -81,6 +87,11 @@ public class ZombieController : MonoBehaviour
                 {
                     // Stop moving when close enough
                     agent.ResetPath();
+
+                    // Rotate toward player
+                    Vector3 toPlayer = (player.position - transform.position).normalized;
+                    Quaternion lookRotation = Quaternion.LookRotation(new Vector3(toPlayer.x, 0, toPlayer.z));
+                    transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
 
                     // Attack if cooldown passed
                     if (Time.time > lastAttackTime + attackCooldown)
@@ -100,9 +111,27 @@ public class ZombieController : MonoBehaviour
 
     private void Attack()
     {
-        Debug.Log("Enemy attacks the player!");
+        hitbox.enabled = true;
         anim.SetTrigger(animIDAttack);
+        StartCoroutine(TemporaryStopRoutine());
         // Add animation trigger or damage logic here
+    }
+
+    private IEnumerator PlaySFXRoutine()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(5f);
+            TryPlayZombieSFX();
+        }
+    }
+
+    private void TryPlayZombieSFX()
+    {
+        if (Random.value <= 0.25f)
+        {
+            GameEventHandler.PlaySFX(SFXID.ZombieGroan);
+        }
     }
 
     public void TakeDamage(Vector3 hitDirection, float knockback)
@@ -110,12 +139,17 @@ public class ZombieController : MonoBehaviour
         anim.SetTrigger(animIDDamaged);
         GameEventHandler.PlaySFX(SFXID.ZombieDamaged);
         TriggerFlash();
-        StartCoroutine(TakeDamageRoutine());
+        // Only play SFX 30% of the time to avoid clutter
+        if (Random.value <= 0.3f)
+        {
+            GameEventHandler.PlaySFX(SFXID.ZombieDamaged);
+        }
+        StartCoroutine(TemporaryStopRoutine());
 
         ApplyKnockback(hitDirection, knockback);
     }
 
-    private IEnumerator TakeDamageRoutine()
+    private IEnumerator TemporaryStopRoutine()
     {
         agent.isStopped = true; // stop moving
         yield return new WaitForSeconds(1f); // stunned for 1 second
@@ -124,7 +158,7 @@ public class ZombieController : MonoBehaviour
 
     private void ApplyKnockback(Vector3 hitDirection, float knockback)
     {
-        StopCoroutine(nameof(KnockbackCoroutine));
+        //StopCoroutine(nameof(KnockbackCoroutine));
         StartCoroutine(KnockbackCoroutine(hitDirection, knockback));
     }
 
@@ -160,6 +194,8 @@ public class ZombieController : MonoBehaviour
         agent.isStopped = true;
         anim.SetTrigger(animIDDead);
         GameEventHandler.PlaySFX(SFXID.ZombieDead);
+        GameEventHandler.EnemyKilled();
+        StopAllCoroutines();
         StartDissolve();
     }
 
