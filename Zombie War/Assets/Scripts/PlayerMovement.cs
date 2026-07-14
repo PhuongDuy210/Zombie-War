@@ -1,13 +1,16 @@
-using UnityEngine;
 using Terresquall;   // Required for VirtualJoystick
+using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
 {
     public float moveSpeed = 5f;   // Movement speed
-    private Rigidbody rb;
+    public float gravity = -9.81f;
     private Animator anim;
+    private CharacterController controller;
     private Collider playerCollider;
+
+    private Vector3 velocity;
 
     private ObjectPool grenadePool;
 
@@ -21,7 +24,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        controller = GetComponent<CharacterController>();
         anim = GetComponent<Animator>();
         playerCollider = GetComponent<Collider>();
 
@@ -55,7 +58,7 @@ public class PlayerMovement : MonoBehaviour
         animIDThrow = Animator.StringToHash("Throw");
     }
 
-    void FixedUpdate()
+    void Update()
     {
         // Read joystick input as a Vector2
         Vector2 joyInput = VirtualJoystick.GetAxis();
@@ -64,18 +67,24 @@ public class PlayerMovement : MonoBehaviour
         Vector3 moveDirection = new Vector3(joyInput.x, 0, joyInput.y);
 
         // Apply movement
-        rb.MovePosition(rb.position + moveDirection * moveSpeed * Time.fixedDeltaTime);
+        controller.Move(moveDirection * moveSpeed * Time.deltaTime);
+
+        // Gravity handling
+        if (controller.isGrounded && velocity.y < 0)
+        {
+            velocity.y = -2f; // small downward force to keep grounded
+        }
+        velocity.y += gravity * Time.deltaTime;
+        controller.Move(velocity * Time.deltaTime);
 
         // Optional: Rotate player to face movement direction
         if (moveDirection.sqrMagnitude > 0.01f)
         {
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-            rb.rotation = Quaternion.Slerp(rb.rotation, targetRotation, 0.2f);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 0.2f);
         }
 
         // --- Animator Speed Scaling ---
-        // Joystick magnitude ranges from 0 to 1.
-        // Scale it to 0–6 for your blend tree.
         float speedValue = joyInput.magnitude * 6f;
         anim.SetFloat(animIDSpeed, speedValue);
     }
