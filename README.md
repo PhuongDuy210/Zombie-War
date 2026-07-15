@@ -42,6 +42,18 @@ Zombie War is a Unity‑based survival shooter where players battle waves of rel
 - `Settings/` → Project settings.
 - `Shaders/` → Custom shaders for effects.
 - `Sprites/` → 2D art assets.
+
+---
+
+## 🔮 Future Improvements
+While the current build demonstrates the core gameplay loop and mechanics, there are several areas we plan to enhance in future iterations:
+
+- **Smoother and more precise controls** – refine player movement and aiming for a more responsive feel.  
+- **Expanded enemy behaviors** – introduce varied attack patterns, smarter AI, and unique zombie types.  
+- **Player‑friendly UI** – improve HUD clarity, add intuitive menus, and enhance accessibility.  
+- **Sound design** – richer audio feedback, immersive ambient sounds, and weapon SFX improvements.  
+- **Level design** – more diverse environments, progressive difficulty scaling, and interactive elements.
+
 ---
 
 ## 🚀 How to Run
